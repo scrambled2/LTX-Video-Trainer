@@ -1,0 +1,99 @@
+# Optimized IC-LoRA Configuration for LTX-Video 0.9.8-13B-Distilled
+# Anime Style Transfer: Live Action → Anime
+# Designed for 40 paired videos on 96GB GPU
+
+# Model configuration
+model:
+  model_source: "Lightricks/LTX-Video-0.9.8-13B-distilled"
+  training_mode: "lora"
+  load_checkpoint: null
+
+# LoRA configuration
+lora:
+  rank: 128  # Good for style transfer
+  alpha: 128
+  dropout: 0.0
+  target_modules:
+    - "to_k"
+    - "to_q"
+    - "to_v"
+    - "to_out.0"
+    - "ff.net.0.proj"  # Include feedforward layers
+    - "ff.net.2"       # for better style capture
+
+# Conditioning configuration - CRITICAL for IC-LoRA
+conditioning:
+  mode: "reference_video"  # Enables IC-LoRA mode
+  first_frame_conditioning_p: 0.15  # Lower for style transfer
+  reference_latents_dir: "reference_latents"
+
+# Optimization configuration
+optimization:
+  learning_rate: 1.5e-4  # Slightly conservative for distilled model
+  steps: 3000  # 40 videos × 75 steps/video
+  batch_size: 1  # Can try 2 if stable
+  gradient_accumulation_steps: 2  # Effective batch size = 2
+  max_grad_norm: 1.0
+  optimizer_type: "adamw8bit"  # Save memory
+  scheduler_type: "cosine"  # Smooth learning rate decay
+  scheduler_params:
+    num_cycles: 0.5
+  enable_gradient_checkpointing: true  # CRITICAL: Saves ~40% memory
+
+# Acceleration optimization
+acceleration:
+  mixed_precision_mode: "bf16"  # Best for A100/H100
+  quantization: null  # Don't quantize for quality
+  load_text_encoder_in_8bit: true  # Saves ~6GB
+  compile_with_inductor: false  # Start false, enable after first successful run
+  compilation_mode: "reduce-overhead"
+
+# Data configuration
+data:
+  preprocessed_data_root: "path/to/your/anime_dataset"
+  num_dataloader_workers: 4  # Parallel data loading
+
+# Validation configuration
+validation:
+  prompts:
+    - "Transform live action footage into anime art style with vibrant colors"
+    - "Convert real video to Japanese animation style with characteristic anime features"
+    - "Anime style transformation of live footage with smooth animation quality"
+  reference_videos:
+    - "path/to/validation_liveaction_1.mp4"
+    - "path/to/validation_liveaction_2.mp4"
+    - "path/to/validation_liveaction_3.mp4"
+  negative_prompt: "worst quality, inconsistent style, blurry, distorted, western cartoon, realistic"
+  video_dims: [768, 448, 41]  # Must match preprocessing
+  seed: 42
+  inference_steps: 8  # DISTILLED MODEL: Use 8 steps (5x faster validation!)
+  interval: 250
+  videos_per_prompt: 1
+  guidance_scale: 1.0  # Distilled models don't use CFG, but keeping for compatibility
+
+# Checkpoint configuration
+checkpoints:
+  interval: 250
+  keep_last_n: 5
+
+# Flow matching configuration
+flow_matching:
+  timestep_sampling_mode: "shifted_logit_normal"
+  timestep_sampling_params: {}
+
+# HuggingFace Hub configuration
+hub:
+  push_to_hub: false
+  hub_model_id: null  # Set to "your-username/anime-style-ic-lora" if pushing
+
+# W&B configuration
+wandb:
+  enabled: false  # Enable for tracking
+  project: "anime-style-ic-lora"
+  entity: null
+  tags: ["ic-lora", "anime-style", "video2video", "distilled-13b"]
+  log_validation_videos: true
+
+# General configuration
+seed: 42
+output_dir: "outputs/anime_style_ic_lora_distilled_098"

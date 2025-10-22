@@ -1,0 +1,93 @@
+# MINIMAL MEMORY IC-LoRA Configuration for Testing
+# Anime Style Transfer: Live Action → Anime
+# Ultra-low memory profile to test IC-LoRA training viability
+
+# Model configuration
+model:
+  model_source: "Lightricks/LTX-Video-0.9.8-13B-distilled"
+  training_mode: "lora"
+  load_checkpoint: null
+
+# LoRA configuration - REDUCED for memory testing
+lora:
+  rank: 64  # Reduced from 128 (saves ~50% LoRA memory)
+  alpha: 64
+  dropout: 0.0
+  target_modules:
+    - "to_k"
+    - "to_q"
+    - "to_v"
+    - "to_out.0"
+    # Removed feedforward modules to reduce memory
+
+# Conditioning configuration
+conditioning:
+  mode: "reference_video"
+  first_frame_conditioning_p: 0.1  # Lower = less memory for conditioning
+  reference_latents_dir: "reference_latents"
+
+# Optimization configuration
+optimization:
+  learning_rate: 2e-4  # Slightly higher for faster convergence in short test
+  steps: 500  # TEST RUN: Just verify it works
+  batch_size: 1
+  gradient_accumulation_steps: 1  # No accumulation for testing
+  max_grad_norm: 1.0
+  optimizer_type: "adamw8bit"  # 8-bit saves ~60% optimizer memory
+  scheduler_type: "constant"  # Simplest scheduler
+  scheduler_params: {}
+  enable_gradient_checkpointing: true  # CRITICAL: Saves ~40% memory
+
+# Acceleration optimization - ALL MEMORY SAVERS ENABLED
+acceleration:
+  mixed_precision_mode: "bf16"
+  quantization: "int8-quanto"  # ENABLE: Reduces transformer from 26GB → 13GB
+  load_text_encoder_in_8bit: true
+  compile_with_inductor: false  # Disabled for testing
+  compilation_mode: "reduce-overhead"
+
+# Data configuration
+data:
+  preprocessed_data_root: "path/to/your/anime_dataset"
+  num_dataloader_workers: 2  # Reduced to save CPU memory
+
+# Validation configuration - MINIMAL
+validation:
+  prompts:
+    - "Transform live action to anime style"
+  reference_videos:
+    - "path/to/validation_reference.mp4"
+  negative_prompt: "worst quality, blurry, distorted"
+  video_dims: [640, 384, 33]  # MUST match preprocessing
+  seed: 42
+  inference_steps: 8
+  interval: 500  # Only validate at end of test
+  videos_per_prompt: 1
+  guidance_scale: 1.0
+
+# Checkpoint configuration
+checkpoints:
+  interval: 500  # Save only at end
+  keep_last_n: 1  # Keep only final checkpoint
+
+# Flow matching configuration
+flow_matching:
+  timestep_sampling_mode: "shifted_logit_normal"
+  timestep_sampling_params: {}
+
+# HuggingFace Hub configuration
+hub:
+  push_to_hub: false
+  hub_model_id: null
+
+# W&B configuration
+wandb:
+  enabled: false
+  project: "anime-ic-lora-test"
+  entity: null
+  tags: ["test", "minimal-memory", "ic-lora"]
+  log_validation_videos: false  # Disabled for testing
+
+# General configuration
+seed: 42
+output_dir: "outputs/anime_ic_lora_minimal_test"
