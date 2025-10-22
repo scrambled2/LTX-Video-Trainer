@@ -17,8 +17,7 @@ lora:
     - "to_q"
     - "to_v"
     - "to_out.0"
-    - "ff.net.0.proj"  # Include feedforward for better style
-    - "ff.net.2"
+    # Removed feedforward modules for faster training
 
 # Conditioning configuration
 conditioning:
