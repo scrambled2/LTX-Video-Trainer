@@ -35,8 +35,7 @@ optimization:
   max_grad_norm: 1.0
   optimizer_type: "adamw8bit"
   scheduler_type: "cosine"
-  scheduler_params:
-    num_cycles: 0.5
+  scheduler_params: {}
   enable_gradient_checkpointing: true
 
 # Acceleration optimization
