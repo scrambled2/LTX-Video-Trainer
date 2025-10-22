@@ -48,7 +48,7 @@ acceleration:
 
 # Data configuration
 data:
-  preprocessed_data_root: "path/to/your/anime_dataset"
+  preprocessed_data_root: "/mnt/e/Projects/DataSet_Projects/IC_LORA/datasets/640_384_33"
   num_dataloader_workers: 2  # Reduced to save CPU memory
 
 # Validation configuration - MINIMAL
@@ -56,7 +56,7 @@ validation:
   prompts:
     - "Transform live action to anime style"
   reference_videos:
-    - "path/to/validation_reference.mp4"
+    - "/mnt/e/Projects/DataSet_Projects/IC_LORA/datasets/640_384_33/references/video_0001.mp4"
   negative_prompt: "worst quality, blurry, distorted"
   video_dims: [640, 384, 33]  # MUST match preprocessing
   seed: 42
