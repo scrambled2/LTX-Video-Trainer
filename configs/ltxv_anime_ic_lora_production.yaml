@@ -1,0 +1,99 @@
+# Production IC-LoRA Configuration - Anime Style Transfer
+# Based on successful test run - now training for quality
+
+# Model configuration
+model:
+  model_source: "Lightricks/LTX-Video-0.9.8-13B-distilled"
+  training_mode: "lora"
+  load_checkpoint: null
+
+# LoRA configuration - FULL rank for production
+lora:
+  rank: 128  # Increased from 64 for better quality
+  alpha: 128
+  dropout: 0.0
+  target_modules:
+    - "to_k"
+    - "to_q"
+    - "to_v"
+    - "to_out.0"
+    - "ff.net.0.proj"  # Include feedforward for better style
+    - "ff.net.2"
+
+# Conditioning configuration
+conditioning:
+  mode: "reference_video"
+  first_frame_conditioning_p: 0.15
+  reference_latents_dir: "reference_latents"
+
+# Optimization configuration
+optimization:
+  learning_rate: 1.5e-4  # Slightly lower for stability
+  steps: 2500  # Production training
+  batch_size: 1
+  gradient_accumulation_steps: 2  # Effective batch size = 2
+  max_grad_norm: 1.0
+  optimizer_type: "adamw8bit"
+  scheduler_type: "cosine"
+  scheduler_params:
+    num_cycles: 0.5
+  enable_gradient_checkpointing: true
+
+# Acceleration optimization
+acceleration:
+  mixed_precision_mode: "bf16"
+  quantization: "int8-quanto"
+  load_text_encoder_in_8bit: true
+  compile_with_inductor: false
+  compilation_mode: "reduce-overhead"
+
+# Data configuration
+data:
+  preprocessed_data_root: "/mnt/e/Projects/DataSet_Projects/IC_LORA/datasets/640_384_33"
+  num_dataloader_workers: 4
+
+# Validation configuration
+validation:
+  prompts:
+    - "Transform live action to anime style with vibrant colors"
+    - "Convert real footage to Japanese animation art style"
+    - "Anime style transformation with characteristic features"
+  reference_videos:
+    - "/mnt/e/Projects/DataSet_Projects/IC_LORA/datasets/640_384_33/references/video_0001.mp4"
+    - "/mnt/e/Projects/DataSet_Projects/IC_LORA/datasets/640_384_33/references/video_0002.mp4"
+    - "/mnt/e/Projects/DataSet_Projects/IC_LORA/datasets/640_384_33/references/video_0003.mp4"
+  negative_prompt: "worst quality, inconsistent style, blurry, distorted, western cartoon"
+  video_dims: [640, 384, 33]
+  seed: 42
+  inference_steps: 8
+  interval: 250  # Validate every 250 steps
+  videos_per_prompt: 1
+  guidance_scale: 1.0
+  skip_initial_validation: false
+
+# Checkpoint configuration - KEEP ALL
+checkpoints:
+  interval: 250  # Save every 250 steps
+  keep_last_n: -1  # Keep ALL checkpoints (no deletion!)
+
+# Flow matching configuration
+flow_matching:
+  timestep_sampling_mode: "shifted_logit_normal"
+  timestep_sampling_params: {}
+
+# HuggingFace Hub configuration
+hub:
+  push_to_hub: false
+  hub_model_id: null
+
+# W&B configuration
+wandb:
+  enabled: false
+  project: "anime-ic-lora-production"
+  entity: null
+  tags: ["ic-lora", "anime-style", "production"]
+  log_validation_videos: true
+
+# General configuration
+seed: 42
+output_dir: "outputs/anime_ic_lora_production"
