@@ -9,8 +9,8 @@ model:
 
 # LoRA configuration - FULL rank for production
 lora:
-  rank: 128  # Increased from 64 for better quality
-  alpha: 128
+  rank: 64  # Reduced to 64 for faster training
+  alpha: 64
   dropout: 0.0
   target_modules:
     - "to_k"
