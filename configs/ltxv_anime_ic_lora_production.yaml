@@ -48,7 +48,7 @@ acceleration:
 
 # Data configuration
 data:
-  preprocessed_data_root: "/mnt/e/Projects/DataSet_Projects/IC_LORA/datasets/832_480_33"
+  preprocessed_data_root: "/mnt/e/Projects/DataSet_Projects/IC_LORA/datasets/640_384_33"
   num_dataloader_workers: 4
 
 # Validation configuration
@@ -58,11 +58,11 @@ validation:
     - "Convert real footage to Japanese animation art style"
     - "Anime style transformation with characteristic features"
   reference_videos:
-    - "/mnt/e/Projects/DataSet_Projects/IC_LORA/datasets/832_480_33/references/video_0001.mp4"
-    - "/mnt/e/Projects/DataSet_Projects/IC_LORA/datasets/832_480_33/references/video_0002.mp4"
-    - "/mnt/e/Projects/DataSet_Projects/IC_LORA/datasets/832_480_33/references/video_0003.mp4"
+    - "/mnt/e/Projects/DataSet_Projects/IC_LORA/datasets/640_384_33/references/video_0001.mp4"
+    - "/mnt/e/Projects/DataSet_Projects/IC_LORA/datasets/640_384_33/references/video_0002.mp4"
+    - "/mnt/e/Projects/DataSet_Projects/IC_LORA/datasets/640_384_33/references/video_0003.mp4"
   negative_prompt: "worst quality, inconsistent style, blurry, distorted, western cartoon"
-  video_dims: [832, 480, 33]
+  video_dims: [640, 384, 33]
   seed: 42
   inference_steps: 8
   interval: 250  # Validate every 250 steps
