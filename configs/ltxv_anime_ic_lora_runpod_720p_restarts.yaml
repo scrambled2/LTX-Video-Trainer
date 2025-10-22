@@ -39,7 +39,7 @@ optimization:
   scheduler_params:
     T_0: 500  # First restart cycle: 500 steps
     T_mult: 2  # Each cycle doubles: 500, 1000, 2000...
-    eta_min: 1e-5  # Minimum LR at bottom of cycles
+    eta_min: 0.00001  # Minimum LR at bottom of cycles
   enable_gradient_checkpointing: true
 
 # Acceleration optimization
