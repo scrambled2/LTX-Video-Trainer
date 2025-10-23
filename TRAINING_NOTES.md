@@ -169,14 +169,18 @@ tokens = (H/32) × (W/32) × ((F-1)/8 + 1) × 2
 | 832×480×49 | ~4,000 | ~7 | ~4.9 hours |
 | 1216×704×49 | ~11,704 | ~15-17 | ~10-12 hours |
 
-**With Feedforward Layers (Local Machine):**
-| Resolution | Speed (sec/step) | Total Time (2500 steps) |
-|------------|------------------|-------------------------|
-| 640×384×33 | ~8-9 | ~6.2 hours |
-| 832×480×49 | ~8-9 | ~6.2 hours |
-| 1216×704×49 | ~45-50 (estimated) | ~31-35 hours |
+**With Feedforward Layers:**
+| Resolution | Hardware | Speed (sec/step) | Total Time (2500 steps) | Config |
+|------------|----------|------------------|-------------------------|---------|
+| 640×384×33 | Local | ~8-9 | ~6.2 hours | production.yaml |
+| 832×480×49 | Local | ~8-9 | ~6.2 hours | production.yaml |
+| 1216×704×49 | Runpod | ~13 (actual) | 8-9 hours (actual) | 720p_restarts.yaml + FF |
 
-**Key Insight:** Speed scales roughly linearly with token count. Feedforward layers add consistent 3x multiplier regardless of resolution.
+**Key Insights:**
+- Speed scales roughly linearly with token count for attention-only
+- Feedforward layers add ~3x overhead at lower resolutions
+- At 720p, feedforward on Runpod Blackwell achieved ~13 sec/step (better than estimated!)
+- Actual 720p+feedforward training: 8-9 hours vs estimated 31-35 hours (much faster than predicted)
 
 ---
 
