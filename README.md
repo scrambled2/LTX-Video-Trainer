@@ -89,6 +89,37 @@ These examples demonstrate how you can train specialized video effects and contr
 
 ---
 
+## 💡 IC-LoRA + Regular LoRA Stacking
+
+**Discovery:** IC-LoRAs can act as compatibility adapters that enable regular LoRAs to work in reference video mode!
+
+When using IC-LoRAs (like style transfer models) with the `reference_video` parameter during inference:
+- **IC-LoRAs alone** work as expected, transforming the reference video to the trained style
+- **Regular LoRAs alone** in reference video mode typically have minimal effect (due to sequence structure mismatch)
+- **IC-LoRA + Regular LoRA together** enables modular style stacking:
+  - The IC-LoRA handles the core transformation (e.g., live action → anime)
+  - Regular LoRAs add aesthetic refinements (e.g., specific art styles, lighting, color grading)
+
+**Example Workflow:**
+```
+Reference Video (live action footage)
+  ↓
++ IC-LoRA (anime transformation)
+  ↓
++ Regular LoRA (Ghibli aesthetic)
+  ↓
+= Ghibli-style anime output
+```
+
+This allows you to:
+- Train one IC-LoRA for your core transformation
+- Reuse it with different regular LoRAs for style variations
+- Mix and match LoRA strengths to fine-tune the blend
+
+The IC-LoRA essentially "bridges" the reference video format, making it compatible with regular LoRAs that weren't trained for video-to-video tasks.
+
+---
+
 ## 🤝 Contributing
 
 We welcome contributions from the community! Here's how you can help:
